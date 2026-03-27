@@ -1,0 +1,222 @@
+============================================================
+  CMSGoPage - Análisis y Plan del Proyecto
+============================================================
+
+OBJETIVO:
+  CMS simple tipo API para que múltiples usuarios administren
+  el contenido de sus páginas web (ej: donAngel.com → sección
+  sucursales, proexcel.com.ar → sección inicio).
+
+============================================================
+  1. VERSIONES CONFIRMADAS (Marzo 2026)
+============================================================
+
+  - .NET 10 (LTS) → Lanzado 11/Nov/2025, soporte hasta Nov/2028
+    C# 14, ASP.NET Core 10, EF Core 10
+  - Angular 21 → Versión actual (v21.2.6)
+    Signals, Control Flow, Deferrable Views, Hydration
+
+============================================================
+  2. CMS EXISTENTES EN .NET - ¿YA TIENEN TODO HECHO?
+============================================================
+
+  A) ORCHARD CORE (v2.2.1) - ⭐ 8.1k estrellas
+  ─────────────────────────────────────────────
+  Repo:     github.com/OrchardCMS/OrchardCore
+  Licencia: BSD-3-Clause (gratis, open source)
+  Target:   ASP.NET Core (.NET 8 actualmente)
+
+  LO QUE YA TIENE:
+    ✅ Multi-tenant (múltiples sitios en una sola instalación)
+    ✅ GraphQL API built-in (headless/decoupled)
+    ✅ Content Types dinámicos (definís tus propios tipos)
+    ✅ Roles y permisos
+    ✅ Media management
+    ✅ Workflows
+    ✅ Localización/multi-idioma
+    ✅ Taxonomías, formularios, SEO
+    ✅ Admin panel incluido
+    ✅ Recipes (templates reusables para sitios)
+
+  LO QUE NO TIENE / LIMITACIONES:
+    ❌ NO tiene REST API nativa (solo GraphQL)
+    ❌ El admin está hecho con Razor/Liquid, NO con Angular
+    ❌ Todavía apunta a .NET 8 (no .NET 10 aún)
+    ❌ Curva de aprendizaje alta por su sistema modular
+    ❌ Demasiado complejo para un CMS simple
+
+  VEREDICTO: Es el más completo. Si tu necesidad encaja
+  exactamente con lo que ofrece, te ahorra MUCHO trabajo.
+  Pero si querés algo simple y personalizado, es overkill.
+
+  ─────────────────────────────────────────────
+
+  B) PIRANHA CMS (v12.1) - ⭐ 2.2k estrellas
+  ─────────────────────────────────────────────
+  Repo:     github.com/PiranhaCMS/piranha.core
+  Licencia: MIT (gratis, open source)
+  Target:   .NET 8 + Entity Framework Core
+
+  LO QUE YA TIENE:
+    ✅ CMS integrado O headless (decoupled)
+    ✅ API para servir contenido
+    ✅ Admin panel (Bootstrap + Vue.js)
+    ✅ Block editor para contenido
+    ✅ Media library con escalado de imágenes
+    ✅ Fácil de configurar (5 minutos con template)
+
+  LO QUE NO TIENE / LIMITACIONES:
+    ❌ NO es multi-tenant nativo
+    ❌ Apunta a .NET 8 (no .NET 10)
+    ❌ Comunidad más chica (64 contributors)
+    ❌ No tiene la flexibilidad de multi-sitio que necesitás
+
+  VEREDICTO: Bueno para un solo sitio. NO encaja bien con tu
+  caso de múltiples usuarios con múltiples sitios.
+
+  ─────────────────────────────────────────────
+
+  C) UMBRACO CMS - Enterprise grade
+  ─────────────────────────────────────────────
+  Web:      umbraco.com
+  Licencia: Open source + planes pagos (Cloud)
+  Target:   .NET (sigue el release cadence de Microsoft)
+
+  LO QUE YA TIENE:
+    ✅ Headless + Hybrid capabilities
+    ✅ API-driven
+    ✅ Multi-idioma
+    ✅ Enterprise (Mercedes-Benz, Volvo, Heineken lo usan)
+    ✅ Hosting en la nube (Umbraco Cloud)
+
+  LO QUE NO TIENE / LIMITACIONES:
+    ❌ Orientado a enterprise (puede ser excesivo)
+    ❌ Cloud es pago
+    ❌ No es multi-tenant en el sentido que vos necesitás
+    ❌ Más pensado para una empresa = un sitio
+
+  VEREDICTO: Excelente CMS pero no encaja con tu modelo
+  de "plataforma donde múltiples clientes editan sus sitios".
+
+============================================================
+  3. RECOMENDACIÓN FINAL
+============================================================
+
+  NINGUNO de los CMS existentes hace EXACTAMENTE lo que
+  necesitás. Tu caso es específico:
+
+  → Plataforma SaaS donde TUS usuarios tienen sus propias
+    páginas y editan secciones de contenido.
+  → API REST que cada sitio consume desde su frontend.
+  → Panel de administración con login por usuario.
+
+  Orchard Core es lo más cercano (tiene multi-tenant + GraphQL),
+  pero si querés algo SIMPLE, PERSONALIZADO y con las tecnologías
+  que vos elegiste (.NET 10 + Angular 21), te conviene:
+
+  ═══════════════════════════════════════════════
+  ★ CONSTRUIRLO CUSTOM con .NET 10 API + Angular 21 ★
+  ═══════════════════════════════════════════════
+
+  Razones:
+  1. Control total sobre el modelo de datos
+  2. API REST diseñada exactamente para tu caso
+  3. Angular 21 como panel de admin (moderno, reactivo)
+  4. .NET 10 LTS (soporte hasta 2028)
+  5. Simple y liviano (sin la complejidad de un CMS full)
+  6. Escalable: podés agregar features según necesites
+
+============================================================
+  4. ARQUITECTURA PROPUESTA
+============================================================
+
+  ┌─────────────────────────────────────────────┐
+  │              FRONTEND (Angular 21)          │
+  │  Panel de Admin: login, editar secciones,   │
+  │  gestionar páginas, subir imágenes          │
+  └──────────────────┬──────────────────────────┘
+                     │ HTTP (JWT Auth)
+  ┌──────────────────▼──────────────────────────┐
+  │           BACKEND API (.NET 10)             │
+  │  ASP.NET Core Web API + EF Core 10          │
+  │  Endpoints REST:                            │
+  │   /api/auth     → Login, registro           │
+  │   /api/sites    → CRUD sitios del usuario   │
+  │   /api/sections → CRUD secciones por sitio  │
+  │   /api/content  → CRUD contenido editable   │
+  │   /api/media    → Upload de imágenes        │
+  │   /api/public/{siteSlug}/sections → GET     │
+  │     (endpoint público para los sitios)      │
+  └──────────────────┬──────────────────────────┘
+                     │
+  ┌──────────────────▼──────────────────────────┐
+  │           BASE DE DATOS                     │
+  │  SQL Server / PostgreSQL / SQLite           │
+  └─────────────────────────────────────────────┘
+
+  SITIOS EXTERNOS (donAngel.com, proexcel.com.ar):
+  → Hacen GET a /api/public/{siteSlug}/sections
+  → Reciben JSON con el contenido actualizado
+  → Lo renderizan en su propio frontend
+
+============================================================
+  5. MODELO DE DATOS (simplificado)
+============================================================
+
+  Users
+  ├── Id, Email, PasswordHash, Name
+  │
+  Sites (un usuario tiene N sitios)
+  ├── Id, UserId, Name, Slug, Domain, CreatedAt
+  │   (ej: "Don Ángel", "donangel", "donangel.com")
+  │
+  Sections (un sitio tiene N secciones)
+  ├── Id, SiteId, Name, Slug, Order, IsActive
+  │   (ej: "Sucursales", "sucursales", 1, true)
+  │
+  ContentBlocks (una sección tiene N bloques de contenido)
+  ├── Id, SectionId, Type, Content (JSON), Order
+  │   Type: "text", "image", "html", "gallery", "map"
+  │   Content: {"title":"...", "body":"...", "imageUrl":"..."}
+  │
+  Media
+  ├── Id, UserId, FileName, Url, ContentType, Size
+
+============================================================
+  6. TECNOLOGÍAS
+============================================================
+
+  Backend:
+  - .NET 10 (LTS)
+  - ASP.NET Core Web API
+  - Entity Framework Core 10
+  - JWT Authentication (con refresh tokens)
+  - FluentValidation para validaciones
+  - SQL Server o PostgreSQL
+
+  Frontend (Admin Panel):
+  - Angular 21
+  - Angular Material o PrimeNG (UI components)
+  - Signals para estado reactivo
+  - Lazy loading por módulo
+  - Editor WYSIWYG (ej: TinyMCE, Quill, TipTap)
+
+  Infraestructura:
+  - Docker (opcional)
+  - CORS configurado para los dominios de los clientes
+  - Rate limiting en endpoints públicos
+
+============================================================
+  7. PRÓXIMOS PASOS
+============================================================
+
+  1. Crear proyecto .NET 10 Web API (backend)
+  2. Configurar EF Core + modelo de datos
+  3. Implementar autenticación JWT
+  4. Crear endpoints REST (Sites, Sections, Content)
+  5. Crear proyecto Angular 21 (admin panel)
+  6. Implementar login + dashboard
+  7. Crear editor de secciones/contenido
+  8. Endpoint público para consumo externo
+  9. Subida de imágenes (Media)
+  10. Testing + Deploy
