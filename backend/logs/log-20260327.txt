@@ -1,0 +1,3 @@
+2026-03-27 19:34:02.599 -03:00 [WRN] Failed to determine the https port for redirect.
+2026-03-27 19:34:03.633 -03:00 [INF] User admin@cmsgopage.com (Admin) logged in
+2026-03-27 19:34:03.958 -03:00 [INF] HTTP POST /api/auth/login responded 200 in 1363.5183 ms
